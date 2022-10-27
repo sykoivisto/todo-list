@@ -29,3 +29,6 @@ const project = () => {
         removeItem,
     }
 }
+export {
+    project
+}

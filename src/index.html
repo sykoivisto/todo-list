@@ -11,6 +11,31 @@
 
 <body>
     <h1>Todo List</h1>
+    <div class="projects">
+        <button id="newTask">New Task</button>
+        <form onsubmit="createItem()">
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title">
+
+            <label for="desc">Description</label>
+            <textarea name="desc" id="desc" cols="30" rows="10"></textarea>            
+            
+            <label for="dueDate">Due Date</label>
+            <input type="datetime-local">       
+
+            <label for="priority">Priority</label>
+            <select name="priority" id="priority">
+                <option value="2" selected>Regular</option>
+                <option value="3">High</option>
+                <option value="1">Low</option>
+            </select>
+            
+            <label for="notes">Notes</label>
+            <textarea name="" id="" cols="30" rows="10"></textarea>
+
+            <button type="submit">Create</button>
+        </form>
+    </div>
 </body>
 
 </html>

@@ -2,7 +2,7 @@ const todoItem = () => {
     let title = ''; //string - title of item
     let desc= ''; //string - description of item
     let dueDate = ''; //time? - items due date
-    let priority = 0; //number 1-3 low regular high
+    let priority = 2; //number 1-3 low regular high
     let notes = ''; //string - notes about item
     let completed = false; //true or false is item complete?
 
@@ -25,4 +25,8 @@ const todoItem = () => {
         get completed () { return completed },
         set completed ( b ) { completed = b } //check for bool
     }
+}
+
+export {
+    todoItem
 }
