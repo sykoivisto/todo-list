@@ -19,14 +19,13 @@ const createDefaultProject = () => {
             'low priority',
             'no notes'
         )
-    )
+    );
 
     projects.push(defaultProject);
 };
 
-//returns a TodoItem
-const createTodoItem = (title, desc, dueDate, priority, notes) => {
-    let newTask = todoItem;
+const createTodoItem = (title, desc, dueDate, priority, notes) => { //returns a todoItem object
+    let newTask = todoItem();
 
     newTask.title = title;
     newTask.desc = desc;
@@ -37,7 +36,7 @@ const createTodoItem = (title, desc, dueDate, priority, notes) => {
     return (newTask);
 }
 
-const renderProject = (p) => {
+const renderProject = (p) => { //accepts a project object. returns a <div> containing the projects info.
     let project = document.createElement('div');
     
     let title = document.createElement('p');
@@ -51,15 +50,15 @@ const renderProject = (p) => {
     project.appendChild(title);
     project.appendChild(desc);
     project.appendChild(notes);
-    
-    for (let tdi in p.todoItems) {
+
+    p.todoItems.forEach(tdi => {
         project.appendChild(renderTodoItem(tdi));
-    }
+    })
     
     return (project);
 }
 
-const renderTodoItem = (tdi) => {
+const renderTodoItem = (tdi) => { //accepts a todoItem object. returns a <div> contianing the items info.
     let todoItem = document.createElement('div');
 
     let title = document.createElement('p');
@@ -86,16 +85,12 @@ const renderTodoItem = (tdi) => {
     return (todoItem);
 }
 
-
 //temp rendering the default project
-
 createDefaultProject();
-console.log(projects)
 const domProjects = document.querySelector('.projects');
 domProjects.appendChild(renderProject(projects[0]));
 
-//FORM FROM DOM
-const createItem = () => {
+const createItem = () => { //gets info from the create item form in the dom. returns a todoItem
     const title = document.getElementById('title').value;
     const desc = document.getElementById('desc').value;
     const dueDate = document.getElementById('dueDate').value;
