@@ -15,6 +15,9 @@ const project = () => {
     };
 
     return {
+        addItem,
+        removeItem,
+
         get title () { return title },
         set title ( s ) { title = s }, //add char limit
 
@@ -25,8 +28,6 @@ const project = () => {
         set notes ( s ) { notes = s }, //add char limit
 
         get todoItems () { return todoItems },
-        addItem,
-        removeItem,
     }
 }
 export {

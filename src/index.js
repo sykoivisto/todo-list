@@ -6,10 +6,10 @@ let projects = [];
 //check for existing projects? if none, create default?
 //temp- manually create default project
 const createDefaultProject = () => {
-    let defaultProject = project;
+    let defaultProject = project();
     defaultProject.title = 'Default Project';
     defaultProject.desc = 'This is the default project';
-    defaultProject.notes = 'Leave notes here!'
+    defaultProject.notes = 'Leave notes here!';
 
     defaultProject.addItem(
         createTodoItem(
@@ -20,7 +20,7 @@ const createDefaultProject = () => {
             'no notes'
         )
     )
-    
+
     projects.push(defaultProject);
 };
 
@@ -52,8 +52,8 @@ const renderProject = (p) => {
     project.appendChild(desc);
     project.appendChild(notes);
     
-    for (todoItem in p.todoItems) {
-        project.appendChild(renderTodoItem(todoItem));
+    for (let tdi in p.todoItems) {
+        project.appendChild(renderTodoItem(tdi));
     }
     
     return (project);
@@ -88,7 +88,9 @@ const renderTodoItem = (tdi) => {
 
 
 //temp rendering the default project
+
 createDefaultProject();
+console.log(projects)
 const domProjects = document.querySelector('.projects');
 domProjects.appendChild(renderProject(projects[0]));
 
