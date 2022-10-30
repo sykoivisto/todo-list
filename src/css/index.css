@@ -71,7 +71,7 @@ nav {
 nav ul {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
     margin-left: 15px;
 }
 nav h3 {
@@ -79,7 +79,7 @@ nav h3 {
     font-weight: bold;
 }
 nav li {
-    padding: 5px;
+    padding: 10px;
     border-radius: 5px;
 }
 nav li:hover {
@@ -92,6 +92,8 @@ nav li:hover {
 }
 main {
     margin: 0 15px 0 15px;
+    display: flex;
+    flex-direction: column;
 }
 #page-header {
     padding: 20px 0 20px 15px;
@@ -121,4 +123,22 @@ main {
     font-size: 20px;
     border: 1px solid var(--accent);
     border-radius: 10px;
+}
+.task:hover {
+    scale: 1.01;
+}
+#add-task {
+    margin: 15px 0 15px 0;
+    align-self: end;
+
+    border-radius: 5px;
+    border: none;
+    background-color: var(--dark-accent);
+    color: white;
+    padding: 10px;
+}
+#add-task:hover {
+    scale: 1.05;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px black;
 }

@@ -94,9 +94,8 @@ const domManager = (() => {
         //our content is going to go in <main>
         const main = document.querySelector('main');
 
-        //create our task list <div>
-        const project = document.createElement('div');
-        project.setAttribute('id', 'task-list');
+        //find our task list <div>
+        const project = document.getElementById('task-list');
 
         //loop through our array of tasks and render each task
         p.todoItems.forEach(tdi => {
@@ -121,9 +120,6 @@ const domManager = (() => {
             //append the task to the task list
             project.appendChild(task);
         })
-
-        //append our task list to the <main>
-        main.appendChild(project);
     }
 
     return {
