@@ -2,103 +2,136 @@ import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
 
-let projects = [];
+//handles all of the CRUD for the todo list tasks and projects
+const listManager = (() => {
+    let projects = [];
 
-//check for existing projects? if none, create default?
-//temp- manually create default project
-const createDefaultProject = () => {
-    let defaultProject = project();
-    defaultProject.title = 'Default Project';
-    defaultProject.desc = 'This is the default project';
+    //********************/
+    //********************/
+    //MAJOR TO DO:********/
+    //Check for existing projects. If projects don't exist, lets create some filler content.
+    //********************/
+    //********************/
 
-    defaultProject.addItem(
-        createTodoItem(
-            'First To-Do Item!',
-            'This is the description',
-            'no due date',
-            'low priority'
-        )
-    );
 
-    projects.push(defaultProject);
-};
+    const createDefaultProject = () => {
+        //lets create an example project
+        let defaultProject = createProject(
+            'Fun Stuff',
+            'This is an example project! Feel free to delete or edit me'
+        );
+        //add a couple example tasks to the project
+        defaultProject.addItem(
+            createTodoItem(
+                'Take bobo for a walk',
+                'bobo likes long walks by the lake',
+                '5:00pm',
+                2
+            )
+        );
+        defaultProject.addItem(
+            createTodoItem(
+                'Take froyo for a walk',
+                'Froyo loves to chase the other dogs',
+                '6:00pm',
+                /*********************
+                **add a date stoage***
+                **solution eventually*
+                **********************
+                *********************/
+                2
+            )
+        );
 
-const createTodoItem = (title, desc, dueDate, priority) => { //returns a todoItem object
-    let newTask = todoItem();
+        projects.push(defaultProject);
+    };
 
-    newTask.title = title;
-    newTask.desc = desc;
-    newTask.dueDate = dueDate;
-    newTask.priority = priority;
+    const createProject = (title, desc) => {
+        let newProject = project();
 
-    return (newTask);
-}
+        newProject.title = title;
+        newProject.desc = desc;
 
-const renderProject = (p) => { //accepts a project object. returns a <div> containing the projects info.
-    let project = document.createElement('div');
-    
-    let title = document.createElement('p');
-    let desc = document.createElement('p');
- 
-    title.innerText = p.title;
-    desc.innerText = p.desc;
+        return (newProject);
+    }
 
-    project.appendChild(title);
-    project.appendChild(desc);
 
-    p.todoItems.forEach(tdi => {
-        project.appendChild(renderTodoItem(tdi));
-    })
-    
-    return (project);
-}
+    //accepts all required/optional info and returns a todoItem object
+    const createTodoItem = (title, desc, dueDate, priority) => {
+        let newTask = todoItem();
 
-const renderTodoItem = (tdi) => { //accepts a todoItem object. returns a <div> contianing the items info.
-    let todoItem = document.createElement('div');
+        newTask.title = title;
+        newTask.desc = desc;
+        newTask.dueDate = dueDate;
+        newTask.priority = priority;
 
-    let title = document.createElement('p');
-    let desc = document.createElement('p');
-    let dueDate = document.createElement('p');
-    let priority = document.createElement('p');
-    let completed = document.createElement('p');
-    
-    title.innerText = tdi.title;
-    desc.innerText = tdi.desc;
-    dueDate.innerText = tdi.dueDate;
-    priority.innerText = tdi.priority;
-    completed.innerText = tdi.completed;
-    
-    todoItem.appendChild(title);
-    todoItem.appendChild(desc);
-    todoItem.appendChild(dueDate);
-    todoItem.appendChild(priority);
-    todoItem.appendChild(completed);
-    
-    return (todoItem);
-}
+        return (newTask);
+    }
+
+    return {
+        createDefaultProject,
+        createTodoItem,
+        createProject,
+        get projects () { return projects },
+    }
+
+})();
+
+//handles all of the reading from and displaying to the DOM
+const domManager = (() => {
+
+    //accepts a project object and renders the appropriate content to the page
+    const renderProject = (p) => {
+        //the title of the project
+        const projectName = document.getElementById('project-name');
+        //the description of the project
+        const projectDesc = document.getElementById('project-desc');
+
+        //update the title and description
+        projectName.innerText = p.title;
+        projectDesc.innerText = p.desc;
+
+        //our content is going to go in <main>
+        const main = document.querySelector('main');
+
+        //create our task list <div>
+        const project = document.createElement('div');
+        project.setAttribute('id', 'task-list');
+
+        //loop through our array of tasks and render each task
+        p.todoItems.forEach(tdi => {
+            //create a div for the task
+            const task = document.createElement('div');
+            task.classList.add('task');
+
+            //add the checkbox
+            const checkbox = document.createElement('div');
+            checkbox.classList.add('checkbox');
+            task.appendChild(checkbox);
+
+            //add our content. title and duedate.
+            const title = document.createElement('p');
+            title.innerText = tdi.title;
+            task.appendChild(title);
+
+            const dueDate = document.createElement('p');
+            dueDate.innerText = tdi.dueDate;
+            task.appendChild(dueDate);
+
+            //append the task to the task list
+            project.appendChild(task);
+        })
+
+        //append our task list to the <main>
+        main.appendChild(project);
+    }
+
+    return {
+        renderProject,
+    }
+})();
+
 
 //temp rendering the default project
-createDefaultProject();
-const domProjects = document.querySelector('.projects');
-domProjects.appendChild(renderProject(projects[0]));
-
-const createItem = () => { //gets info from the create item form in the dom. returns a todoItem
-    const title = document.getElementById('title').value;
-    const desc = document.getElementById('desc').value;
-    const dueDate = document.getElementById('dueDate').value;
-    const priority = document.getElementById('priority').value;
-
-    return (
-        createTodoItem(title, desc, dueDate, priority)
-    );
-}
-
-
-
-
-
-
-let newTaskButton = document.getElementById('newTask');
-newTaskButton.onclick = () => {
-    // open form
-}
+listManager.createDefaultProject();
+domManager.renderProject(listManager.projects[0]);
