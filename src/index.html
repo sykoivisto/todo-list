@@ -20,54 +20,34 @@
         <nav>
             <h3>Projects</h3>
             <ul id="projects-nav">
-                <li>Work</li>
-                <li>Programming</li>
-                <li class="active">Fun</li>
             </ul>
+            <button id="add-project">+ Add Project</button>
         </nav>
         <main>
             <div id="page-header">
                 <div>
-                    <h1 id="project-name">Fun</h1>
-                    <h3 id="project-desc">my list of fun stuff to do</h3>
+                    <h1 id="project-name"></h1>
+                    <h3 id="project-desc"></h3>
                 </div>
                 <p id="project-edit">Edit</p>
             </div>
             <div id="task-list">
-                <div class="task">
-                    <div class="checkbox"></div>
-                    <p>Take bobo for a walk</p>
-                    <p>5:00pm</p>
-                </div>
-                <div class="task">
-                    <div class="checkbox"></div>
-                    <p>Take jenkins for a walk</p>
-                    <p>6:00pm</p>
-                </div>
-                <div class="task">
-                    <div class="checkbox"></div>
-                    <p>Take froyo for a walk</p>
-                    <p>7:00pm</p>
-                </div>
             </div>
             <button id="add-task">+ Add Item</button>
         </main>
 
     </div>
 
-
-
-    <!-- <div class="projects">
-        <button id="newTask">New Task</button>
+    <!--
         <form onsubmit="createItem()">
             <label for="title">Title</label>
             <input type="text" name="title" id="title">
 
             <label for="desc">Description</label>
-            <textarea name="desc" id="desc" cols="30" rows="10"></textarea>            
-            
+            <input type="text" name="desc" id="desc">
+
             <label for="dueDate">Due Date</label>
-            <input type="datetime-local">       
+            <input type="datetime-local" name="dueDate" id="dueDate">       
 
             <label for="priority">Priority</label>
             <select name="priority" id="priority">
@@ -75,13 +55,10 @@
                 <option value="3">High</option>
                 <option value="1">Low</option>
             </select>
-            
-            <label for="notes">Notes</label>
-            <textarea name="" id="" cols="30" rows="10"></textarea>
 
             <button type="submit">Create</button>
         </form>
-    </div> -->
+    -->
 </body>
 
 </html>

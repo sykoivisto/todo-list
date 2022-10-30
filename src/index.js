@@ -23,15 +23,15 @@ const listManager = (() => {
         //add a couple example tasks to the project
         defaultProject.addItem(
             createTodoItem(
-                'Take bobo for a walk',
-                'bobo likes long walks by the lake',
+                'Take Bobo for a walk',
+                'Bobo likes long walks by the lake',
                 '5:00pm',
                 2
             )
         );
         defaultProject.addItem(
             createTodoItem(
-                'Take froyo for a walk',
+                'Take Froyo for a walk',
                 'Froyo loves to chase the other dogs',
                 '6:00pm',
                 /*********************
@@ -120,14 +120,41 @@ const domManager = (() => {
             //append the task to the task list
             project.appendChild(task);
         })
+
+        //set the correct styles to the navbar.
+        //reset any current active class.
+        const current = document.querySelectorAll('.active');
+        current.forEach(li => {
+            li.classList.remove('active')
+        })
+        //put the active class on the current project
+        const newActive = document.querySelector(`[data-title='${p.title}']`);
+        newActive.classList.add('active');
+    }
+
+    //accepts an array of projects. renders the appropriate content to the dom.
+    const renderProjectList = (pl) => {
+        //get the ul
+        const ul = document.getElementById('projects-nav');
+        
+        //loop thru the array and do the thing
+        pl.forEach(p => {
+            //make a new list item for the project
+            const li = document.createElement('li');
+            li.innerText = p.title;
+            li.setAttribute('data-title', p.title);
+            ul.appendChild(li);
+        });
     }
 
     return {
         renderProject,
+        renderProjectList,
     }
 })();
 
 
 //temp rendering the default project
 listManager.createDefaultProject();
+domManager.renderProjectList(listManager.projects);
 domManager.renderProject(listManager.projects[0]);

@@ -67,6 +67,8 @@ header h1 {
 nav {
     margin: 15px 0 0 15px;
     font-size: 20px;
+    display: flex;
+    flex-direction: column;
 }
 nav ul {
     display: flex;
@@ -127,18 +129,23 @@ main {
 .task:hover {
     scale: 1.01;
 }
-#add-task {
-    margin: 15px 0 15px 0;
-    align-self: end;
-
+button {
     border-radius: 5px;
     border: none;
     background-color: var(--dark-accent);
     color: white;
     padding: 10px;
+    font-size: 16px;
 }
-#add-task:hover {
+button:hover {
     scale: 1.05;
     cursor: pointer;
     box-shadow: 1px 1px 1px black;
+}
+#add-task {
+    margin: 15px 0 15px 0;
+    align-self: end;
+}
+#add-project {
+    margin: 15px 0 0 15px;
 }
