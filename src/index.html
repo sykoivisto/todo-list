@@ -10,8 +10,53 @@
 </head>
 
 <body>
-    <h1>Todo List</h1>
-    <div class="projects">
+
+    <!-- hard coded example -->
+    <header>
+        <h1>Todo List</h1>
+    </header>
+
+    <div class="content">
+        <nav>
+            <h3>Projects</h3>
+            <ul id="projects-nav">
+                <li>Work</li>
+                <li>Programming</li>
+                <li class="active">Fun</li>
+            </ul>
+        </nav>
+        <main>
+            <div id="page-header">
+                <div>
+                    <h1>Fun</h1>
+                    <h3>my list of fun stuff to do</h3>
+                </div>
+                <p id="project-edit">Edit</p>
+            </div>
+            <div id="task-list">
+                <div class="task">
+                    <div class="checkbox"></div>
+                    <p>Take bobo for a walk</p>
+                    <p>5:00pm</p>
+                </div>
+                <div class="task">
+                    <div class="checkbox"></div>
+                    <p>Take jenkins for a walk</p>
+                    <p>6:00pm</p>
+                </div>
+                <div class="task">
+                    <div class="checkbox"></div>
+                    <p>Take froyo for a walk</p>
+                    <p>7:00pm</p>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+
+
+    <!-- <div class="projects">
         <button id="newTask">New Task</button>
         <form onsubmit="createItem()">
             <label for="title">Title</label>
@@ -35,7 +80,7 @@
 
             <button type="submit">Create</button>
         </form>
-    </div>
+    </div> -->
 </body>
 
 </html>

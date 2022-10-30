@@ -1,7 +1,6 @@
 const project = () => {
     let title = ''; //string - title of project
     let desc= ''; //string - description of project
-    let notes = ''; //string - notes about project
     let todoItems = []; //array of todoItems
 
     //accepts a todoItem
@@ -23,9 +22,6 @@ const project = () => {
 
         get desc () { return desc },
         set desc ( s ) { desc = s }, //add char limit
-
-        get notes () { return notes},
-        set notes ( s ) { notes = s }, //add char limit
 
         get todoItems () { return todoItems },
     }
