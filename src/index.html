@@ -6,7 +6,6 @@
     <title>Todo List</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="icon" href="favicon.ico">
-    <script defer="defer" src="bundle.js"></script>
 </head>
 
 <body>
@@ -18,10 +17,11 @@
 
     <div class="content">
         <nav>
+            <h3 id="all-tasks">All Tasks</h3>
             <h3>Projects</h3>
             <ul id="projects-nav">
             </ul>
-            <button id="add-project">+ Add Project</button>
+            <button id="add-project" onclick="domManager.onClickAddProject()">+ Add Project</button>
         </nav>
         <main>
             <div id="page-header">

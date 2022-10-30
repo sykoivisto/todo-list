@@ -42,8 +42,6 @@ const listManager = (() => {
                 2
             )
         );
-
-        projects.push(defaultProject);
     };
 
     const createProject = (title, desc) => {
@@ -51,6 +49,8 @@ const listManager = (() => {
 
         newProject.title = title;
         newProject.desc = desc;
+
+        projects.push(newProject);
 
         return (newProject);
     }
@@ -91,11 +91,10 @@ const domManager = (() => {
         projectName.innerText = p.title;
         projectDesc.innerText = p.desc;
 
-        //our content is going to go in <main>
-        const main = document.querySelector('main');
-
         //find our task list <div>
         const project = document.getElementById('task-list');
+        //clear any leftover content
+        project.innerHTML = '';
 
         //loop through our array of tasks and render each task
         p.todoItems.forEach(tdi => {
@@ -128,7 +127,7 @@ const domManager = (() => {
             li.classList.remove('active')
         })
         //put the active class on the current project
-        const newActive = document.querySelector(`[data-title='${p.title}']`);
+        const newActive = document.querySelector(`[data-index='${listManager.projects.indexOf(p)}']`);
         newActive.classList.add('active');
     }
 
@@ -136,23 +135,103 @@ const domManager = (() => {
     const renderProjectList = (pl) => {
         //get the ul
         const ul = document.getElementById('projects-nav');
+        //erase the old content
+        ul.innerHTML = ('')
         
         //loop thru the array and do the thing
-        pl.forEach(p => {
+        pl.forEach((p, i) => {
             //make a new list item for the project
             const li = document.createElement('li');
             li.innerText = p.title;
-            li.setAttribute('data-title', p.title);
+            li.setAttribute('data-index', i);
+            //add our click listener for navigation
+            li.addEventListener('click', () => {
+                renderProject(p);
+            })
             ul.appendChild(li);
         });
+    }
+
+    //render the menu for creating a new project
+    const onClickAddProject = () => {
+        //create our menu
+        const menu = document.createElement('div');
+        menu.classList.add('popup-menu');
+
+        //create our form
+        const form = document.createElement('form');
+
+        //add a close button
+        const close = document.createElement('p');
+        close.classList.add('close-popup');
+        close.innerText = 'close';
+        close.addEventListener('click', () => {
+            document.querySelector('.popup-menu').remove();
+        })
+        form.appendChild(close);
+
+        //create our inputs and labels
+        //title label
+        const titleLabel = document.createElement('label');
+        titleLabel.htmlFor = 'pTitle';
+        titleLabel.innerText = 'Title';
+        form.appendChild(titleLabel);
+        //title input
+        const titleInput = document.createElement('input');
+        titleInput.setAttribute('type', 'text');
+        titleInput.setAttribute('name', 'pTitle');
+        titleInput.setAttribute('id', 'pTitle');
+        titleInput.required = true;
+        form.appendChild(titleInput);
+        //desc label
+        const descLabel = document.createElement('label');
+        descLabel.htmlFor = 'pDesc';
+        descLabel.innerText = 'Description';
+        form.appendChild(descLabel);
+        //desc input
+        const descInput = document.createElement('input');
+        descInput.setAttribute('type', 'text');
+        descInput.setAttribute('name', 'pDesc');
+        descInput.setAttribute('id', 'pDesc');
+        descInput.required = true;
+        form.appendChild(descInput);
+
+        //add submit button
+        const submit = document.createElement('button');
+        submit.setAttribute('type', 'submit');
+        submit.innerText = 'Create Project';
+        form.appendChild(submit);
+
+
+        //do stuff to create our new project
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            //create our new project
+            listManager.createProject(titleInput.value, descInput.value)
+            //refresh our project list
+            renderProjectList(listManager.projects);
+            //navigate to our new project
+            renderProject(listManager.projects[listManager.projects.length-1])
+            //destory our menu
+            document.querySelector('.popup-menu').remove();
+        }
+        
+        //append our <form> to the menu <div>
+        menu.appendChild(form);
+
+        const body = document.querySelector('body');
+        body.appendChild(menu);
     }
 
     return {
         renderProject,
         renderProjectList,
+        onClickAddProject
     }
 })();
 
+//make domManager accessible from the dom because i want to use the onclick attribute instead of event listeners for some buttons
+window.domManager = domManager;
 
 //temp rendering the default project
 listManager.createDefaultProject();

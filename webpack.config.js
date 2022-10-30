@@ -26,7 +26,7 @@ const config = {
         new HtmlWebpackPlugin({
             template: './src/index.html',
             favicon: './src/favicon.ico',
-            inject: false
+            // inject: false
         }),
 
         new MiniCssExtractPlugin(),
