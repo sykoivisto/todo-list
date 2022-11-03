@@ -195,7 +195,7 @@ button:hover {
     align-self: end;
     color: grey;
 }
-.close-popup:hover {
+.close-popup:hover, #project-edit:hover {
     text-decoration: underline;
     cursor: pointer;
 }
