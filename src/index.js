@@ -2,20 +2,6 @@ import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
 
-// 
-// 
-// 
-// To do:
-// put page refreshing logic in its own function
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-
 //handles all of the CRUD for the todo list tasks and projects
 const listManager = (() => {
     let projects = [];
@@ -56,6 +42,7 @@ const listManager = (() => {
                 2
             )
         );
+        return defaultProject;
     };
 
     const createProject = (title, desc) => {
@@ -326,19 +313,19 @@ const domManager = (() => {
             yesButton.onclick = (e => {
                 //delete the project
                 listManager.deleteProject(projectIndex);
-                //refresh our project list
-                renderProjectList(listManager.projects);
-                //navigate to a project
-                //
-                //
-                //
-                //Major to do^^^
-                //
-                //
-                //
-                //
-                //
-                //renderProject(listManager.projects[listManager.projects.length-1])
+
+                if (listManager.projects[0]) {
+                    //refresh our project list
+                    renderProjectList(listManager.projects);
+                    //navigate to the first project in the list.
+                    //maybe later change this to the all projects page?
+                    renderProject(listManager.projects[0]);
+                } else {
+                    listManager.createDefaultProject();
+                    renderProjectList
+                    renderProject(listManager.projects[0]);
+                }
+
                 //destory our menus
                 document.querySelectorAll('.popup-menu').forEach(x => {
                     x.remove();
