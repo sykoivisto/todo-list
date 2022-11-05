@@ -8,8 +8,21 @@ const listManager = (() => {
 
     //********************/
     //********************/
-    //MAJOR TO DO:********/
+    //MAJOR TO DO:
+    //
     //Check for existing projects. If projects don't exist, lets create some filler content.
+    //
+    //Make add item button work.
+    //
+    //Make items interactive.
+    //  Click on an item's checkmark to cross it off.
+    //  Click on an item to expand it's content (show description and priority)
+    //  Add edit button to exanded item's to change it's details
+    //
+    //Make All tasks page
+    //
+    //Add persistence with localstorage
+    //  should be simple enough- each time an item in listManager.projects[] is updated, update the local copy? Check for copy on load.
     //********************/
     //********************/
 
@@ -314,6 +327,10 @@ const domManager = (() => {
                 //delete the project
                 listManager.deleteProject(projectIndex);
 
+                //this checks if we have a project and navigates to the first project.
+                //if there is no project it makes one.
+                //this whole thing can basically be removed if this is changed to navigate to the all projects page instead,
+                //but as of writing this, that page doesn't exist. probably will do that when we get there.
                 if (listManager.projects[0]) {
                     //refresh our project list
                     renderProjectList(listManager.projects);
