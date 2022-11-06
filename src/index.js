@@ -12,7 +12,7 @@ const listManager = (() => {
     //
     //Check for existing projects. If projects don't exist, lets create some filler content.
     //
-    //Make add item button work.
+    //Add a date formating solution
     //
     //Make items interactive.
     //  Click on an item's checkmark to cross it off.
@@ -47,11 +47,6 @@ const listManager = (() => {
                 'Take Froyo for a walk',
                 'Froyo loves to chase the other dogs',
                 '6:00pm',
-                /*********************
-                **add a date stoage***
-                **solution eventually*
-                **********************
-                *********************/
                 2
             )
         );
@@ -90,7 +85,7 @@ const listManager = (() => {
         createTodoItem,
         createProject,
         deleteProject,
-        get projects () { return projects },
+        get projects() { return projects },
     }
 
 })();
@@ -102,19 +97,38 @@ const domManager = (() => {
     const renderProject = (p) => {
         //index of the project
         const projectIndex = listManager.projects.indexOf(p);
-        //the title of the project
-        const projectName = document.getElementById('project-name');
-        //the description of the project
-        const projectDesc = document.getElementById('project-desc');
 
-        //update the title and description
-        projectName.innerText = p.title;
-        projectDesc.innerText = p.desc;
-
-        //find our task list <div>
-        const project = document.getElementById('task-list');
+        const main = document.querySelector('main');
         //clear any leftover content
-        project.innerHTML = '';
+        main.innerHTML = '';
+
+        //header
+        const header = document.createElement('div');
+        header.setAttribute('id', 'page-header');
+
+        const headerContainer = document.createElement('div');
+
+        const headerTitle = document.createElement('h1');
+        headerTitle.innerText = p.title;
+        headerContainer.appendChild(headerTitle);
+
+        const projectDesc = document.createElement('h3');
+        projectDesc.innerText = p.desc;
+        headerContainer.appendChild(projectDesc);
+
+        header.appendChild(headerContainer);
+
+        //edit button
+        const editButton = document.createElement('p');
+        editButton.setAttribute('id', 'project-edit');
+        editButton.innerText = 'Edit';
+        header.appendChild(editButton);
+
+        main.appendChild(header);
+
+        //create our task list <div>
+        const project = document.createElement('div');
+        project.setAttribute('id', 'task-list');
 
         //loop through our array of tasks and render each task
         p.todoItems.forEach(tdi => {
@@ -140,6 +154,17 @@ const domManager = (() => {
             project.appendChild(task);
         })
 
+        //append project to the dom
+        main.appendChild(project);
+
+        //add item button
+        const addItem = document.createElement('button');
+        addItem.setAttribute('id', 'add-task');
+        addItem.innerText = '+ Add Item';
+        addItem.setAttribute('data-project-index', projectIndex);
+        addItem.onclick = e => { onClickAddItem(e) };
+        main.appendChild(addItem);
+
         //set the correct styles to the navbar.
         //reset any current active class.
         const current = document.querySelectorAll('.active');
@@ -151,7 +176,6 @@ const domManager = (() => {
         newActive.classList.add('active');
 
         //make our edit button work
-        const editButton = document.getElementById('project-edit');
         editButton.setAttribute('data-project-index', projectIndex);
         editButton.addEventListener('click', onClickEditProject);
     }
@@ -162,7 +186,7 @@ const domManager = (() => {
         const ul = document.getElementById('projects-nav');
         //erase the old content
         ul.innerHTML = ('')
-        
+
         //loop thru the array and do the thing
         pl.forEach((p, i) => {
             //make a new list item for the project
@@ -236,11 +260,11 @@ const domManager = (() => {
             //refresh our project list
             renderProjectList(listManager.projects);
             //navigate to our new project
-            renderProject(listManager.projects[listManager.projects.length-1])
+            renderProject(listManager.projects[listManager.projects.length - 1])
             //destory our menu
             document.querySelector('.popup-menu').remove();
         }
-        
+
         //append our <form> to the menu <div>
         menu.appendChild(form);
 
@@ -250,7 +274,7 @@ const domManager = (() => {
 
     //render the menu for editing a project
     const onClickEditProject = (e) => {
-        const projectIndex = e.srcElement.dataset.projectIndex;
+        const projectIndex = e.target.dataset.projectIndex;
         const project = listManager.projects[projectIndex];
 
         //create our menu
@@ -376,7 +400,7 @@ const domManager = (() => {
             //destory our menu
             document.querySelector('.popup-menu').remove();
         }
-        
+
         //append our <form> to the menu <div>
         menu.appendChild(form);
 
@@ -385,10 +409,120 @@ const domManager = (() => {
 
     }
 
+    //render the menu for adding a project
+    const onClickAddItem = (e) => {
+        //find our project and its index
+        const projectIndex = e.target.dataset.projectIndex;
+        const project = listManager.projects[projectIndex];
+
+        //create our menu
+        const menu = document.createElement('div');
+        menu.classList.add('popup-menu');
+
+        //create our form
+        const form = document.createElement('form');
+
+        //add a close button
+        const close = document.createElement('p');
+        close.classList.add('close-popup');
+        close.innerText = 'close';
+        close.addEventListener('click', () => {
+            document.querySelector('.popup-menu').remove();
+        })
+        form.appendChild(close);
+
+        //create our inputs and labels
+        //title label
+        const titleLabel = document.createElement('label');
+        titleLabel.htmlFor = 'iTitle';
+        titleLabel.innerText = 'Title';
+        form.appendChild(titleLabel);
+        //title input
+        const titleInput = document.createElement('input');
+        titleInput.setAttribute('type', 'text');
+        titleInput.setAttribute('name', 'iTitle');
+        titleInput.setAttribute('id', 'iTitle');
+        titleInput.required = true;
+        form.appendChild(titleInput);
+        //desc label
+        const descLabel = document.createElement('label');
+        descLabel.htmlFor = 'iDesc';
+        descLabel.innerText = 'Description';
+        form.appendChild(descLabel);
+        //desc input
+        const descInput = document.createElement('input');
+        descInput.setAttribute('type', 'text');
+        descInput.setAttribute('name', 'iDesc');
+        descInput.setAttribute('id', 'iDesc');
+        descInput.required = true;
+        form.appendChild(descInput);
+        //duedate label
+        const dueDateLabel = document.createElement('label');
+        dueDateLabel.htmlFor = 'dueDate';
+        dueDateLabel.innerText = 'Due Date';
+        form.appendChild(dueDateLabel);
+        //duedate input
+        const dueDateInput = document.createElement('input');
+        dueDateInput.setAttribute('type', 'datetime-local');
+        dueDateInput.setAttribute('name', 'dueDate');
+        dueDateInput.setAttribute('id', 'dueDate');
+        dueDateInput.required = true;
+        form.appendChild(dueDateInput);
+        //priority label
+        const priorityLabel = document.createElement('label');
+        priorityLabel.htmlFor = 'priority';
+        priorityLabel.innerText = 'Priority';
+        form.appendChild(priorityLabel);
+        //priority input
+        const priorityInput = document.createElement('select');
+        priorityInput.setAttribute('name', 'priority');
+        priorityInput.setAttribute('id', 'priority');
+        priorityInput.required = true;
+        //select options
+        const priorityLow = document.createElement('option');
+        priorityLow.setAttribute('value', '1');
+        priorityLow.innerText = 'Low';
+        priorityInput.appendChild(priorityLow);
+        const priorityRegular = document.createElement('option');
+        priorityRegular.setAttribute('value', '2');
+        priorityRegular.innerText = 'Regular';
+        priorityRegular.setAttribute('selected', 'selected');
+        priorityInput.appendChild(priorityRegular);
+        const priorityHigh = document.createElement('option');
+        priorityHigh.setAttribute('value', '3');
+        priorityHigh.innerText = 'High';
+        priorityInput.appendChild(priorityHigh);
+        form.appendChild(priorityInput);
+        //add submit button
+        const submit = document.createElement('button');
+        submit.setAttribute('type', 'submit');
+        submit.innerText = 'Create Task';
+        form.appendChild(submit);
+
+
+        //do stuff to create our new project
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            //create our new task and add it to the project
+            project.addItem(listManager.createTodoItem(titleInput.value, descInput.value, dueDateInput.value, priorityInput.value));
+            //render our project again
+            renderProject(listManager.projects[projectIndex]);
+            //destory our menu
+            document.querySelector('.popup-menu').remove();
+        }
+
+        //append our <form> to the menu <div>
+        menu.appendChild(form);
+
+        const body = document.querySelector('body');
+        body.appendChild(menu);
+    }
+
     return {
         renderProject,
         renderProjectList,
-        onClickAddProject
+        onClickAddProject,
+        onClickAddItem
     }
 })();
 
