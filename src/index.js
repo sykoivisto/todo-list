@@ -237,7 +237,8 @@ const domManager = (() => {
             const priority = document.createElement('span');
             priority.innerText = listManager.priorityToString(tdi.priority);
             //color code the priority
-            switch (tdi.priority) {
+            const priorityNum = Number(tdi.priority);
+            switch (priorityNum) {
                 case 1:
                     priority.classList.add('blue');
                     break;
