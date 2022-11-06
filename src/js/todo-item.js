@@ -1,7 +1,7 @@
 const todoItem = () => {
     let title = ''; //string - title of item
     let desc= ''; //string - description of item
-    let dueDate = ''; //time? - items due date
+    let dueDate = Date; //time? - items due date
     let priority = 2; //number 1-3 low regular high
     let completed = false; //true or false is item complete?
 

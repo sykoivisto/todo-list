@@ -141,7 +141,30 @@ main {
 .expanded {
     grid-column-start: 1;
     grid-column-end: 3;
-    background-color: red;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+}
+.expanded-content {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    font-size: 16px;
+}
+.expanded-edit-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.blue {
+    color: blue;
+}
+.green {
+    color: green;
+}
+.red {
+    color: red;
 }
 button {
     border-radius: 5px;

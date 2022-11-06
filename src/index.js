@@ -1,8 +1,7 @@
 import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
-import { format, formatDistanceToNow } from 'date-fns';
-import { isPast } from 'date-fns';
+import { format, formatDistanceToNow, parseISO, isPast, parse } from 'date-fns';
 
 //handles all of the CRUD for the todo list tasks and projects
 const listManager = (() => {
@@ -14,12 +13,9 @@ const listManager = (() => {
     //
     //Check for existing projects. If projects don't exist, lets create some filler content.
     //
-    //Add a date formating solution
-    //
     //Make items interactive.
-    //  Click on an item's checkmark to cross it off.
-    //  Click on an item to expand it's content (show description and priority)
-    //  Add edit button to exanded item's to change it's details
+    //  Click on an item's title to cross it off
+    //  Make the edit button work
     //
     //Make All tasks page
     //
@@ -42,7 +38,7 @@ const listManager = (() => {
             createTodoItem(
                 'Take Bobo for a walk',
                 'Bobo likes long walks by the lake',
-                today,
+                new Date('2022-03-25'),
                 2
             )
         );
@@ -78,13 +74,14 @@ const listManager = (() => {
 
         newTask.title = title;
         newTask.desc = desc;
-        newTask.dueDate = dueDate;
+        newTask.dueDate = formatDate(dueDate);
         newTask.priority = priority;
 
         return (newTask);
     }
 
     const priorityToString = (p) => {
+        p = Number (p);
         switch(p) {
             case 1:
                 return 'Low';
@@ -97,12 +94,21 @@ const listManager = (() => {
         }
     }
 
+    const formatDate = (date) => {
+        if (date instanceof Date) {
+            return date;
+        } else {
+            return parseISO(date);
+        }
+    }
+
     return {
         createDefaultProject,
         createTodoItem,
         createProject,
         deleteProject,
         priorityToString,
+        formatDate,
         get projects() { return projects },
     }
 
@@ -163,7 +169,7 @@ const domManager = (() => {
             task.appendChild(title);
 
             const dueDate = document.createElement('p');
-            dueDate.innerText = `${formatDistanceToNow(tdi.dueDate)}${isPast(tdi.dueDate) ? ' ago' : ''}`;
+            dueDate.innerText = `${isPast(tdi.dueDate) ? formatDistanceToNow(tdi.dueDate) + ' ago': 'in ' + formatDistanceToNow(tdi.dueDate)}`;
             task.appendChild(dueDate);
 
             //append the task to the task list
@@ -197,28 +203,75 @@ const domManager = (() => {
     }
 
     //accepts the event and a to do item object. renders the appropriate content for the xpanded view
-    const onClickExpandTask = (e, tdi) => {
+    const onClickExpandTask = (e, tdi) => { //holy $#!* it took forever to get this guy to work properly f*** html input elements
         //check if item is expanded.
         //if expanded, collapse, if not, expand.
-        console.log(e)
-        //keep the original content, but add a new div below
         const target = e.currentTarget;
-        const container = document.createElement('div');
-        container.classList.add('expanded');
-        //render the description
-        const desc = document.createElement('p');
-        desc.innerText = tdi.desc;
-        container.appendChild(desc);
-        //render the full date
-        const fullDate = document.createElement('p');
-        fullDate.innerText = format(tdi.dueDate, 'PPP, p');
-        container.appendChild(fullDate);
-        //render the priority
-        const priority = document.createElement('p');
-        priority.innerText = `Priority: ${listManager.priorityToString(tdi.priority)}`;
-        container.appendChild(priority);
-        //render an edit button
-        target.appendChild(container);
+
+        if (target.getAttribute('expanded')) {
+            const expandedContent = target.querySelector('.expanded');
+            if (expandedContent) {expandedContent.remove()} //fixes an issue that should never happen
+            //remove the expanded attribute.
+            target.removeAttribute('expanded');
+        } else {
+            //give our target the expanded attribute so if it's clicked again we can see it is, in fact, expanded.
+            target.setAttribute('expanded', 'expanded');
+            //keep the original content, but add a new div below
+            const container = document.createElement('div');
+            container.classList.add('expanded');
+            
+            //container for the content - keeping the edit button separate
+            const contentContainer = document.createElement('div');
+            contentContainer.classList.add('expanded-content');
+            //render the description
+            const desc = document.createElement('p');
+            desc.innerText = tdi.desc;
+            contentContainer.appendChild(desc);
+            //render the full date
+            const fullDate = document.createElement('p');
+            fullDate.innerText = format(tdi.dueDate, 'PPP, p');
+            //color red if overdue
+            isPast(tdi.dueDate) ? fullDate.classList.add('red') : null;
+            contentContainer.appendChild(fullDate);
+            //render the priority
+            const priority = document.createElement('span');
+            priority.innerText = listManager.priorityToString(tdi.priority);
+            //color code the priority
+            switch (tdi.priority) {
+                case 1:
+                    priority.classList.add('blue');
+                    break;
+                case 2:
+                    priority.classList.add('green');
+                    break;
+                case 3:
+                    priority.classList.add('red');
+                    break;
+                default:
+                    priority.classList.add('green');
+                    break;
+            }
+    
+            const priorityText = document.createElement('p');
+            priorityText.innerText = 'Priority: ';
+            priorityText.appendChild(priority);
+    
+            contentContainer.appendChild(priorityText);
+    
+            container.appendChild(contentContainer);
+    
+            //render an edit button
+            const editButtonContainer = document.createElement('div');
+            editButtonContainer.classList.add('expanded-edit-button-container');
+
+            const edit = document.createElement('button');
+            edit.innerText = 'Edit';
+            editButtonContainer.appendChild(edit);
+
+            container.appendChild(editButtonContainer);
+    
+            target.appendChild(container);
+        }
     }
 
     //accepts an array of projects. renders the appropriate content to the dom.
