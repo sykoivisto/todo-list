@@ -127,7 +127,7 @@ main {
 }
 .task {
     display: grid;
-    grid-template-columns: 50px 4fr 1fr;
+    grid-template-columns: 4fr 1fr;
 
     padding: 20px;
     font-size: 20px;
@@ -136,6 +136,12 @@ main {
 }
 .task:hover {
     scale: 1.01;
+    cursor: pointer;
+}
+.expanded {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    background-color: red;
 }
 button {
     border-radius: 5px;

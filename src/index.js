@@ -1,6 +1,8 @@
 import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
+import { format, formatDistanceToNow } from 'date-fns';
+import { isPast } from 'date-fns';
 
 //handles all of the CRUD for the todo list tasks and projects
 const listManager = (() => {
@@ -34,11 +36,13 @@ const listManager = (() => {
             'This is an example project! Feel free to delete or edit me'
         );
         //add a couple example tasks to the project
+        let today = new Date();
+        today.setHours(today.getHours()+1);
         defaultProject.addItem(
             createTodoItem(
                 'Take Bobo for a walk',
                 'Bobo likes long walks by the lake',
-                '5:00pm',
+                today,
                 2
             )
         );
@@ -46,7 +50,7 @@ const listManager = (() => {
             createTodoItem(
                 'Take Froyo for a walk',
                 'Froyo loves to chase the other dogs',
-                '6:00pm',
+                today,
                 2
             )
         );
@@ -80,11 +84,25 @@ const listManager = (() => {
         return (newTask);
     }
 
+    const priorityToString = (p) => {
+        switch(p) {
+            case 1:
+                return 'Low';
+            case 2:
+                return 'Regular';
+            case 3:
+                return 'High';
+            default:
+                return regular;
+        }
+    }
+
     return {
         createDefaultProject,
         createTodoItem,
         createProject,
         deleteProject,
+        priorityToString,
         get projects() { return projects },
     }
 
@@ -135,11 +153,9 @@ const domManager = (() => {
             //create a div for the task
             const task = document.createElement('div');
             task.classList.add('task');
-
-            //add the checkbox
-            const checkbox = document.createElement('div');
-            checkbox.classList.add('checkbox');
-            task.appendChild(checkbox);
+            task.addEventListener('click', e => {
+                onClickExpandTask(e, tdi);
+            })
 
             //add our content. title and duedate.
             const title = document.createElement('p');
@@ -147,7 +163,7 @@ const domManager = (() => {
             task.appendChild(title);
 
             const dueDate = document.createElement('p');
-            dueDate.innerText = tdi.dueDate;
+            dueDate.innerText = `${formatDistanceToNow(tdi.dueDate)}${isPast(tdi.dueDate) ? ' ago' : ''}`;
             task.appendChild(dueDate);
 
             //append the task to the task list
@@ -178,6 +194,31 @@ const domManager = (() => {
         //make our edit button work
         editButton.setAttribute('data-project-index', projectIndex);
         editButton.addEventListener('click', onClickEditProject);
+    }
+
+    //accepts the event and a to do item object. renders the appropriate content for the xpanded view
+    const onClickExpandTask = (e, tdi) => {
+        //check if item is expanded.
+        //if expanded, collapse, if not, expand.
+        console.log(e)
+        //keep the original content, but add a new div below
+        const target = e.currentTarget;
+        const container = document.createElement('div');
+        container.classList.add('expanded');
+        //render the description
+        const desc = document.createElement('p');
+        desc.innerText = tdi.desc;
+        container.appendChild(desc);
+        //render the full date
+        const fullDate = document.createElement('p');
+        fullDate.innerText = format(tdi.dueDate, 'PPP, p');
+        container.appendChild(fullDate);
+        //render the priority
+        const priority = document.createElement('p');
+        priority.innerText = `Priority: ${listManager.priorityToString(tdi.priority)}`;
+        container.appendChild(priority);
+        //render an edit button
+        target.appendChild(container);
     }
 
     //accepts an array of projects. renders the appropriate content to the dom.

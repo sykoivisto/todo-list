@@ -23,5 +23,8 @@
     "watch": "webpack --watch",
     "serve": "webpack serve",
     "start": "webpack serve --open"
+  },
+  "dependencies": {
+    "date-fns": "^2.29.3"
   }
 }
