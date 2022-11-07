@@ -14,7 +14,6 @@ const listManager = (() => {
     //Check for existing projects. If projects don't exist, lets create some filler content.
     //
     //Make items interactive.
-    //  Click on an item's title to cross it off
     //  Make the edit button work
     //
     //Make All tasks page
@@ -39,7 +38,8 @@ const listManager = (() => {
                 'Take Bobo for a walk',
                 'Bobo likes long walks by the lake',
                 new Date('2022-03-25'),
-                2
+                2,
+                true
             )
         );
         defaultProject.addItem(
@@ -69,13 +69,14 @@ const listManager = (() => {
     }
 
     //accepts all required/optional info and returns a todoItem object
-    const createTodoItem = (title, desc, dueDate, priority) => {
+    const createTodoItem = (title, desc, dueDate, priority, completed) => {
         let newTask = todoItem();
 
         newTask.title = title;
         newTask.desc = desc;
         newTask.dueDate = formatDate(dueDate);
         newTask.priority = priority;
+        newTask.completed = completed;
 
         return (newTask);
     }
@@ -163,6 +164,16 @@ const domManager = (() => {
                 onClickExpandTask(e, tdi);
             })
 
+            const checkbox = document.createElement('input');
+            checkbox.setAttribute('type', 'checkbox');
+            tdi.completed ? checkbox.checked = true : checkbox.checked = false;
+            checkbox.onclick = (e => {
+                e.stopPropagation();
+                tdi.completed = !tdi.completed;
+                onClickCheckItem(tdi, task);
+            })
+            task.appendChild(checkbox);
+
             //add our content. title and duedate.
             const title = document.createElement('p');
             title.innerText = tdi.title;
@@ -171,6 +182,9 @@ const domManager = (() => {
             const dueDate = document.createElement('p');
             dueDate.innerText = `${isPast(tdi.dueDate) ? formatDistanceToNow(tdi.dueDate) + ' ago': 'in ' + formatDistanceToNow(tdi.dueDate)}`;
             task.appendChild(dueDate);
+
+            //render appropriate checked styles
+            onClickCheckItem(tdi, task);
 
             //append the task to the task list
             project.appendChild(task);
@@ -273,6 +287,11 @@ const domManager = (() => {
     
             target.appendChild(container);
         }
+    }
+
+    //accepts the tdi. renders the appropriate styles for a tdi depedning on whether its checked off
+    const onClickCheckItem = (tdi, task) => {
+        tdi.completed ? task.classList.add('completed') : task.classList.remove('completed');
     }
 
     //accepts an array of projects. renders the appropriate content to the dom.

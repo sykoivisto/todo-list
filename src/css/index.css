@@ -127,7 +127,7 @@ main {
 }
 .task {
     display: grid;
-    grid-template-columns: 4fr 1fr;
+    grid-template-columns: 50px 4fr 1fr;
 
     padding: 20px;
     font-size: 20px;
@@ -138,8 +138,17 @@ main {
     scale: 1.01;
     cursor: pointer;
 }
+.task *:hover {
+    cursor: pointer;
+}
+.completed {
+    background-color: lightgrey;
+}
+.completed > p:first-of-type {
+ text-decoration: line-through;
+}
 .expanded {
-    grid-column-start: 1;
+    grid-column-start: 2;
     grid-column-end: 3;
     display: grid;
     grid-template-columns: 4fr 1fr;
