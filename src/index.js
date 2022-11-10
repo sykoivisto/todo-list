@@ -1,7 +1,8 @@
 import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
-import { format, formatDistanceToNow, parseISO, isPast, parse } from 'date-fns';
+import { format, formatDistanceToNow, isPast } from 'date-fns';
+import { formatDTString } from "./js/toISOString";
 
 //handles all of the CRUD for the todo list tasks and projects
 const listManager = (() => {
@@ -32,7 +33,7 @@ const listManager = (() => {
         );
         //add a couple example tasks to the project
         let today = new Date();
-        today.setHours(today.getHours()+1);
+        today.setHours(today.getHours() + 1);
         defaultProject.addItem(
             createTodoItem(
                 'Take Bobo for a walk',
@@ -74,7 +75,7 @@ const listManager = (() => {
 
         newTask.title = title;
         newTask.desc = desc;
-        newTask.dueDate = formatDate(dueDate);
+        newTask.dueDate = dueDate;
         newTask.priority = priority;
         newTask.completed = completed;
 
@@ -82,8 +83,8 @@ const listManager = (() => {
     }
 
     const priorityToString = (p) => {
-        p = Number (p);
-        switch(p) {
+        p = Number(p);
+        switch (p) {
             case 1:
                 return 'Low';
             case 2:
@@ -95,21 +96,12 @@ const listManager = (() => {
         }
     }
 
-    const formatDate = (date) => {
-        if (date instanceof Date) {
-            return date;
-        } else {
-            return parseISO(date);
-        }
-    }
-
     return {
         createDefaultProject,
         createTodoItem,
         createProject,
         deleteProject,
         priorityToString,
-        formatDate,
         get projects() { return projects },
     }
 
@@ -180,13 +172,14 @@ const domManager = (() => {
             task.appendChild(title);
 
             const dueDate = document.createElement('p');
-            dueDate.innerText = `${isPast(tdi.dueDate) ? formatDistanceToNow(tdi.dueDate) + ' ago': 'in ' + formatDistanceToNow(tdi.dueDate)}`;
+            dueDate.innerText = `${isPast(tdi.dueDate) ? formatDistanceToNow(tdi.dueDate) + ' ago' : 'in ' + formatDistanceToNow(tdi.dueDate)}`;
             task.appendChild(dueDate);
 
             //render appropriate checked styles
             onClickCheckItem(tdi, task);
 
             //append the task to the task list
+            task.setAttribute('data-project-index', projectIndex);
             project.appendChild(task);
         })
 
@@ -224,7 +217,7 @@ const domManager = (() => {
 
         if (target.getAttribute('expanded')) {
             const expandedContent = target.querySelector('.expanded');
-            if (expandedContent) {expandedContent.remove()} //fixes an issue that should never happen
+            if (expandedContent) { expandedContent.remove() } //fixes an issue that should never happen
             //remove the expanded attribute.
             target.removeAttribute('expanded');
         } else {
@@ -233,7 +226,7 @@ const domManager = (() => {
             //keep the original content, but add a new div below
             const container = document.createElement('div');
             container.classList.add('expanded');
-            
+
             //container for the content - keeping the edit button separate
             const contentContainer = document.createElement('div');
             contentContainer.classList.add('expanded-content');
@@ -266,15 +259,15 @@ const domManager = (() => {
                     priority.classList.add('green');
                     break;
             }
-    
+
             const priorityText = document.createElement('p');
             priorityText.innerText = 'Priority: ';
             priorityText.appendChild(priority);
-    
+
             contentContainer.appendChild(priorityText);
-    
+
             container.appendChild(contentContainer);
-    
+
             //render an edit button
             const editButtonContainer = document.createElement('div');
             editButtonContainer.classList.add('expanded-edit-button-container');
@@ -282,9 +275,14 @@ const domManager = (() => {
             const edit = document.createElement('button');
             edit.innerText = 'Edit';
             editButtonContainer.appendChild(edit);
+            edit.onclick = (e => onClickEditItem(e, tdi));
+            //add a delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.innerText = 'Delete';
+            editButtonContainer.appendChild(deleteButton);
 
             container.appendChild(editButtonContainer);
-    
+
             target.appendChild(container);
         }
     }
@@ -511,6 +509,139 @@ const domManager = (() => {
             renderProjectList(listManager.projects);
             //refresh our page
             renderProject(project);
+            //destory our menu
+            document.querySelector('.popup-menu').remove();
+        }
+
+        //append our <form> to the menu <div>
+        menu.appendChild(form);
+
+        const body = document.querySelector('body');
+        body.appendChild(menu);
+
+    }
+
+    //render the menu for editing a to do item
+    const onClickEditItem = (e, tdi) => {
+        //find our project and its index
+        const projectIndex = e.target.parentElement.parentElement.parentElement.dataset.projectIndex;
+        const project = listManager.projects[projectIndex];
+
+        //create our menu
+        const menu = document.createElement('div');
+        menu.classList.add('popup-menu');
+
+        //create our form
+        const form = document.createElement('form');
+
+        //add a close button
+        const close = document.createElement('p');
+        close.classList.add('close-popup');
+        close.innerText = 'close';
+        close.addEventListener('click', () => {
+            document.querySelector('.popup-menu').remove();
+        })
+        form.appendChild(close);
+
+        //create our inputs and labels
+        //title label
+        const titleLabel = document.createElement('label');
+        titleLabel.htmlFor = 'iTitle';
+        titleLabel.innerText = 'Title';
+        form.appendChild(titleLabel);
+        //title input
+        const titleInput = document.createElement('input');
+        titleInput.setAttribute('type', 'text');
+        titleInput.setAttribute('name', 'iTitle');
+        titleInput.setAttribute('id', 'iTitle');
+        titleInput.required = true;
+        titleInput.value = tdi.title;
+        form.appendChild(titleInput);
+        //desc label
+        const descLabel = document.createElement('label');
+        descLabel.htmlFor = 'iDesc';
+        descLabel.innerText = 'Description';
+        form.appendChild(descLabel);
+        //desc input
+        const descInput = document.createElement('input');
+        descInput.setAttribute('type', 'text');
+        descInput.setAttribute('name', 'iDesc');
+        descInput.setAttribute('id', 'iDesc');
+        descInput.required = true;
+        descInput.value = tdi.desc;
+        form.appendChild(descInput);
+        //duedate label
+        const dueDateLabel = document.createElement('label');
+        dueDateLabel.htmlFor = 'dueDate';
+        dueDateLabel.innerText = 'Due Date';
+        form.appendChild(dueDateLabel);
+        //duedate input
+        const dueDateInput = document.createElement('input');
+        dueDateInput.setAttribute('type', 'datetime-local');
+        dueDateInput.setAttribute('name', 'dueDate');
+        dueDateInput.setAttribute('id', 'dueDate');
+        dueDateInput.required = true;
+        dueDateInput.value = formatDTString(tdi.dueDate);
+
+        form.appendChild(dueDateInput);
+        //priority label
+        const priorityLabel = document.createElement('label');
+        priorityLabel.htmlFor = 'priority';
+        priorityLabel.innerText = 'Priority';
+        form.appendChild(priorityLabel);
+        //priority input
+        const priorityInput = document.createElement('select');
+        priorityInput.setAttribute('name', 'priority');
+        priorityInput.setAttribute('id', 'priority');
+        priorityInput.required = true;
+        //select options
+        const priorityLow = document.createElement('option');
+        priorityLow.setAttribute('value', '1');
+        priorityLow.innerText = 'Low';
+        priorityInput.appendChild(priorityLow);
+        const priorityRegular = document.createElement('option');
+        priorityRegular.setAttribute('value', '2');
+        priorityRegular.innerText = 'Regular';
+        priorityInput.appendChild(priorityRegular);
+        const priorityHigh = document.createElement('option');
+        priorityHigh.setAttribute('value', '3');
+        priorityHigh.innerText = 'High';
+        priorityInput.appendChild(priorityHigh);
+
+
+        switch (Number(tdi.priority)) {
+            case 1:
+                priorityLow.setAttribute('selected', 'selected');
+                break;
+            case 2:
+                priorityRegular.setAttribute('selected', 'selected');
+                break;
+            case 3:
+                priorityHigh.setAttribute('selected', 'selected');
+                break;
+            default:
+                priorityRegular.setAttribute('selected', 'selected');
+                break;
+
+        }
+
+        form.appendChild(priorityInput);
+        //add submit button
+        const submit = document.createElement('button');
+        submit.setAttribute('type', 'submit');
+        submit.innerText = 'Save Changes';
+        form.appendChild(submit);
+
+        //do stuff to create our new project
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            //save our changes.
+            tdi.title = titleInput.value;
+            tdi.desc = descInput.value;
+            tdi.dueDate = dueDateInput.value;
+            tdi.priority = priorityInput.value;
+            //render our project again
+            renderProject(listManager.projects[projectIndex]);
             //destory our menu
             document.querySelector('.popup-menu').remove();
         }

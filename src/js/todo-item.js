@@ -1,3 +1,4 @@
+import { parseISO } from "date-fns";
 const todoItem = () => {
     let title = ''; //string - title of item
     let desc= ''; //string - description of item
@@ -13,7 +14,13 @@ const todoItem = () => {
         set desc ( s ) { desc = s }, //add char limit
 
         get dueDate () { return dueDate },
-        set dueDate ( date ) { dueDate = date }, //check for format
+        set dueDate ( date ) {
+            if (date instanceof Date) {
+                dueDate = date;
+            } else {
+                dueDate = parseISO(date);
+            }
+        },
 
         get priority () { return priority },
         set priority ( num ) { priority = num }, //check for num 1-3
