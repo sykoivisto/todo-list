@@ -24,9 +24,7 @@ const listManager = (() => {
     //MAJOR TO DO:
     //
     //Check for existing projects. If projects don't exist, lets create some filler content.
-    //
-    //Make All tasks page
-    //
+    // 
     //Add persistence with localstorage
     //  should be simple enough- each time an item in listManager.projects[] is updated, update the local copy? Check for copy on load.
     //********************/
@@ -244,6 +242,80 @@ const domManager = (() => {
         //make our edit button work
         editButton.setAttribute('data-project-index', projectIndex);
         editButton.addEventListener('click', onClickEditProject);
+    }
+
+    //renders a simple view of all tasks
+    const onClickRenderAllTasks = () => {
+        const main = document.querySelector('main');
+        //clear any leftover content
+        main.innerHTML = '';
+
+        //set the correct styles to the navbar.
+        //reset any current active class.
+        const current = document.querySelectorAll('.active');
+        current.forEach(li => {
+            li.classList.remove('active')
+        })
+        //put the active class on the current project
+        const newActive = document.getElementById('all-tasks');
+        newActive.classList.add('active');
+
+        //header
+        const header = document.createElement('div');
+        header.setAttribute('id', 'page-header');
+
+        const headerTitle = document.createElement('h1');
+        headerTitle.innerText = 'All Tasks'
+        header.appendChild(headerTitle);
+
+        main.appendChild(header);
+
+        //create our task list <div>
+        const project = document.createElement('div');
+        project.setAttribute('id', 'task-list');
+
+        //get all projects and put all the items in one array
+        const allTasks = [];
+        listManager.projects.forEach((project) => {
+            project.todoItems.forEach((task) => {
+                allTasks.push(task);
+            });
+        });
+
+        allTasks.forEach((tdi, i) => {
+            //create a div for the task
+            const task = document.createElement('div');
+            task.classList.add('task');
+
+            const checkbox = document.createElement('input');
+            checkbox.setAttribute('type', 'checkbox');
+            tdi.completed ? checkbox.checked = true : checkbox.checked = false;
+            checkbox.onclick = (e => {
+                e.stopPropagation();
+                tdi.completed = !tdi.completed;
+                onClickCheckItem(tdi, task);
+            })
+            task.appendChild(checkbox);
+
+            //add our content. title and duedate.
+            const title = document.createElement('p');
+            title.innerText = tdi.title;
+            task.appendChild(title);
+
+            const dueDate = document.createElement('p');
+            dueDate.innerText = `${isPast(tdi.dueDate) ? formatDistanceToNow(tdi.dueDate) + ' ago' : 'in ' + formatDistanceToNow(tdi.dueDate)}`;
+            task.appendChild(dueDate);
+
+            //render appropriate checked styles
+            onClickCheckItem(tdi, task);
+
+            //append the task to the task list
+            // task.setAttribute('data-project-index', projectIndex);
+            task.setAttribute('data-item-index', i);
+            project.appendChild(task);
+        });
+
+        main.appendChild(project);
     }
 
     //accepts the event and a to do item object. renders the appropriate content for the xpanded view
@@ -794,7 +866,8 @@ const domManager = (() => {
         renderProject,
         renderProjectList,
         onClickAddProject,
-        onClickAddItem
+        onClickAddItem,
+        onClickRenderAllTasks
     }
 })();
 
