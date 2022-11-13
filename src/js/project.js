@@ -24,6 +24,7 @@ const project = () => {
         set desc ( s ) { desc = s }, //add char limit
 
         get todoItems () { return todoItems },
+        set todoItems (tdis) { todoItems = tdis}
     }
 }
 export {

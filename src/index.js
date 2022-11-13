@@ -1,12 +1,12 @@
 import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
-import { format, formatDistanceToNow, isPast } from 'date-fns';
+import { format, formatDistanceToNow, isPast, parseISO } from 'date-fns';
 import { formatDTString } from "./js/toISOString";
 
 //handles all of the CRUD for the todo list tasks and projects
 const listManager = (() => {
-    
+
     // Features:
     // Create projects to sort your tasks
     // Create tasks
@@ -17,14 +17,27 @@ const listManager = (() => {
     // Mark tasks as completed
     // Color coded priority of tasks
     // Due date of expanded tasks colored red if overdue
+    // Data is stored locally
 
-    // if (localStorage.getItem('projects')) {
-    //     //if project exist, do . . .
-    // } else {
-    //     createDefaultProject();
-    // }
-    
     let projects = [];
+
+    const getProjects = () => {
+
+        let savedProjects = JSON.parse(localStorage.getItem('projects'));
+
+        savedProjects.forEach((p) => {
+            p = Object.assign(new project(), p);
+            p.todoItems.forEach((tdi) => {
+                tdi = Object.assign(new todoItem(), tdi);
+            });
+        });
+
+        return savedProjects;
+    }
+
+    const saveProjects = () => {
+        localStorage.setItem('projects', JSON.stringify(projects));
+    }
 
     const createDefaultProject = () => {
         //lets create an example project
@@ -52,10 +65,12 @@ const listManager = (() => {
                 2
             )
         );
+        saveProjects();
         return defaultProject;
     };
 
     const createProject = (title, desc) => {
+
         let newProject = project();
 
         newProject.title = title;
@@ -63,26 +78,34 @@ const listManager = (() => {
 
         projects.push(newProject);
 
+        saveProjects();
+
         return (newProject);
     }
 
     //accepts the index of a project and removes it from the array
     const deleteProject = (index) => {
         projects.splice(index, 1);
+        saveProjects();
     }
 
     const editProject = (project, title, desc) => {
         project.title = title;
         project.desc = desc;
+        saveProjects();
+
     }
 
     const addItem = (project, title, desc, duedate, priority) => {
         project.addItem(listManager.createTodoItem(title, desc, duedate, priority));
+        saveProjects();
     }
 
     //accepts the index of an item and a project and removes the item from the array
     const deleteItem = (projectIndex, itemIndex) => {
         projects[projectIndex].todoItems.splice(itemIndex, 1);
+        saveProjects();
+
     }
 
     const editItem = (tdi, title, desc, dueDate, priority) => {
@@ -90,10 +113,14 @@ const listManager = (() => {
         tdi.desc = desc;
         tdi.dueDate = dueDate;
         tdi.priority = priority;
+        saveProjects();
+
     }
 
     const toggleCompleted = (tdi) => {
         tdi.completed = !tdi.completed;
+        saveProjects();
+
     }
 
     //accepts all required/optional info and returns a todoItem object
@@ -121,6 +148,13 @@ const listManager = (() => {
             default:
                 return regular;
         }
+    }
+
+    if (!localStorage.getItem('projects')) {
+        createDefaultProject();
+    } else {
+        console.log('Locally stored content found')
+        projects = getProjects();
     }
 
     return {
@@ -890,6 +924,5 @@ const domManager = (() => {
 window.domManager = domManager;
 
 //temp rendering the default project
-listManager.createDefaultProject();
 domManager.renderProjectList(listManager.projects);
 domManager.renderProject(listManager.projects[0]);
