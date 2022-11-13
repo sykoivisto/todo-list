@@ -1,7 +1,7 @@
 import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
-import { format, formatDistanceToNow, isPast, parseISO } from 'date-fns';
+import { format, formatDistanceToNow, isPast, parseISO, parse, parseJSON } from 'date-fns';
 import { formatDTString } from "./js/toISOString";
 
 //handles all of the CRUD for the todo list tasks and projects
@@ -23,13 +23,16 @@ const listManager = (() => {
 
     const getProjects = () => {
 
-        let savedProjects = JSON.parse(localStorage.getItem('projects'));
+        let savedProjects = JSON.parse(localStorage.getItem('projects')).map((p) => {
+            let projObj = Object.assign(new project(), p);
+            
+            projObj.todoItems = projObj.todoItems.map((tdi) => {
+                let tdiObj = Object.assign(new todoItem(), tdi);
+                tdiObj.dueDate = parseJSON(tdi.dueDate);
+                return tdiObj;
+            })
 
-        savedProjects.forEach((p) => {
-            p = Object.assign(new project(), p);
-            p.todoItems.forEach((tdi) => {
-                tdi = Object.assign(new todoItem(), tdi);
-            });
+            return projObj;
         });
 
         return savedProjects;
@@ -153,7 +156,6 @@ const listManager = (() => {
     if (!localStorage.getItem('projects')) {
         createDefaultProject();
     } else {
-        console.log('Locally stored content found')
         projects = getProjects();
     }
 
@@ -633,7 +635,7 @@ const domManager = (() => {
             noButton.setAttribute('type', 'button');
             noButton.innerText = 'Cancel';
             //have the no button just remove the confirmation from the dom
-            noButton.onclick = e => console.log(e.path[2].remove())
+            noButton.onclick = e => (e.path[2].remove())
             confirmationForm.appendChild(noButton);
 
             confirmation.appendChild(confirmationForm);
