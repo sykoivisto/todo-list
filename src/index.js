@@ -1,23 +1,11 @@
 import { todoItem } from "./js/todo-item";
 import { project } from "./js/project";
 import './css/index.css';
-import { format, formatDistanceToNow, isPast, parseISO, parse, parseJSON } from 'date-fns';
+import { format, formatDistanceToNow, isPast, parseJSON } from 'date-fns';
 import { formatDTString } from "./js/toISOString";
 
 //handles all of the CRUD for the todo list tasks and projects
 const listManager = (() => {
-
-    // Features:
-    // Create projects to sort your tasks
-    // Create tasks
-    // Navigate between projects or the all tasks view
-    // Expand the tasks to view more details (project page only)
-    // Edit the details of projects and tasks
-    // Delete projects and tasks
-    // Mark tasks as completed
-    // Color coded priority of tasks
-    // Due date of expanded tasks colored red if overdue
-    // Data is stored locally
 
     let projects = [];
 
@@ -25,7 +13,7 @@ const listManager = (() => {
 
         let savedProjects = JSON.parse(localStorage.getItem('projects')).map((p) => {
             let projObj = Object.assign(new project(), p);
-            
+
             projObj.todoItems = projObj.todoItems.map((tdi) => {
                 let tdiObj = Object.assign(new todoItem(), tdi);
                 tdiObj.dueDate = parseJSON(tdi.dueDate);
