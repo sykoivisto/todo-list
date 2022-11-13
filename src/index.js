@@ -6,30 +6,25 @@ import { formatDTString } from "./js/toISOString";
 
 //handles all of the CRUD for the todo list tasks and projects
 const listManager = (() => {
-    let projects = [];
-
+    
     // Features:
     // Create projects to sort your tasks
     // Create tasks
     // Navigate between projects or the all tasks view
-    // Expand the tasks to view more details
+    // Expand the tasks to view more details (project page only)
     // Edit the details of projects and tasks
     // Delete projects and tasks
     // Mark tasks as completed
     // Color coded priority of tasks
     // Due date of expanded tasks colored red if overdue
 
-    //********************/
-    //********************/
-    //MAJOR TO DO:
-    //
-    //Check for existing projects. If projects don't exist, lets create some filler content.
-    // 
-    //Add persistence with localstorage
-    //  should be simple enough- each time an item in listManager.projects[] is updated, update the local copy? Check for copy on load.
-    //********************/
-    //********************/
-
+    // if (localStorage.getItem('projects')) {
+    //     //if project exist, do . . .
+    // } else {
+    //     createDefaultProject();
+    // }
+    
+    let projects = [];
 
     const createDefaultProject = () => {
         //lets create an example project
@@ -76,9 +71,29 @@ const listManager = (() => {
         projects.splice(index, 1);
     }
 
+    const editProject = (project, title, desc) => {
+        project.title = title;
+        project.desc = desc;
+    }
+
+    const addItem = (project, title, desc, duedate, priority) => {
+        project.addItem(listManager.createTodoItem(title, desc, duedate, priority));
+    }
+
     //accepts the index of an item and a project and removes the item from the array
     const deleteItem = (projectIndex, itemIndex) => {
         projects[projectIndex].todoItems.splice(itemIndex, 1);
+    }
+
+    const editItem = (tdi, title, desc, dueDate, priority) => {
+        tdi.title = title;
+        tdi.desc = desc;
+        tdi.dueDate = dueDate;
+        tdi.priority = priority;
+    }
+
+    const toggleCompleted = (tdi) => {
+        tdi.completed = !tdi.completed;
     }
 
     //accepts all required/optional info and returns a todoItem object
@@ -115,6 +130,10 @@ const listManager = (() => {
         deleteProject,
         priorityToString,
         deleteItem,
+        toggleCompleted,
+        editProject,
+        addItem,
+        editItem,
         get projects() { return projects },
     }
 
@@ -195,7 +214,7 @@ const domManager = (() => {
             tdi.completed ? checkbox.checked = true : checkbox.checked = false;
             checkbox.onclick = (e => {
                 e.stopPropagation();
-                tdi.completed = !tdi.completed;
+                listManager.toggleCompleted(tdi);
                 onClickCheckItem(tdi, task);
             })
             task.appendChild(checkbox);
@@ -592,8 +611,7 @@ const domManager = (() => {
         form.onsubmit = (e) => {
             e.preventDefault();
             //update the project
-            project.title = titleInput.value;
-            project.desc = descInput.value;
+            listManager.editProject(project, titleInput.value, descInput.value);
             //refresh our project list
             renderProjectList(listManager.projects);
             //refresh our page
@@ -705,7 +723,7 @@ const domManager = (() => {
         form.onsubmit = (e) => {
             e.preventDefault();
             //create our new task and add it to the project
-            project.addItem(listManager.createTodoItem(titleInput.value, descInput.value, dueDateInput.value, priorityInput.value));
+            listManager.addItem(project, titleInput.value, descInput.value, dueDateInput.value, priorityInput.value);
             //render our project again
             renderProject(listManager.projects[projectIndex]);
             //destory our menu
@@ -833,10 +851,7 @@ const domManager = (() => {
         form.onsubmit = (e) => {
             e.preventDefault();
             //save our changes.
-            tdi.title = titleInput.value;
-            tdi.desc = descInput.value;
-            tdi.dueDate = dueDateInput.value;
-            tdi.priority = priorityInput.value;
+            listManager.editItem(tdi, titleInput.value, descInput.value, dueDateInput.value, priorityInput.value);
             //render our project again
             renderProject(listManager.projects[projectIndex]);
             //destory our menu
